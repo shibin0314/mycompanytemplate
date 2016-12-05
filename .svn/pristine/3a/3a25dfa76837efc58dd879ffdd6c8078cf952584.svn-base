@@ -1,0 +1,325 @@
+<div class="dms-search">
+	<form class="form-horizontal">
+	
+	<div class="modal-header">
+			<div class="modal-title">角色模板选择</div>
+			<div class="modal-close">
+				<a data-dismiss="modal" class="btn btn-lg">
+				<i class="fa fa-remove"></i></a>
+			</div>
+		</div>
+	
+	<div class="modal-body">
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<div class="row">
+				
+					<div class="col-xs-12 col-sm-6 col-md-4 col-lg-6">
+						<div class="form-group">
+							<label class="control-label col-xs-4">角色代码</label>
+							<div class="col-xs-8 ">
+								<input type="text" class="form-control" id="roleCode"
+									name="roleCode">
+							</div>
+						</div>
+					</div>
+
+					<div class="col-xs-12 col-sm-6 col-md-4 col-lg-6">
+						<div class="form-group">
+							<label class="control-label col-xs-4">角色名称</label>
+							<div class="col-xs-8 ">
+								<input type="text" class="form-control" id="roleName"
+									name="roleName">
+							</div>
+						</div>
+					</div>
+
+				</div>
+				<div class="row ">
+					<div class="col-xs-12 ">
+						<div class="query-btn">
+							<a href="javascript:;" class="btn blue"> <i
+								class="fa fa-search"></i> 查询
+							</a> <a href="javascript:;" class="btn blue"> <i
+								class="fa fa-undo"></i> 重置
+							</a>
+						</div>
+  
+					</div>
+				</div>
+			</div>
+		</div>
+		</div>
+	<!-- </form>
+	
+	
+	<form class="form-horizontal"> -->
+	<div class="panel panel-default table-panel">
+		<div class="panel-heading ">
+			<div class="pannel-name ">角色信息</div>
+			<div class="pannel-button">
+				<div class="btn-group btn-group-sm">
+					<a  class="btn blue" data-onclickEvent="true">  确定
+					</a>
+					
+				</div>
+			</div>
+		</div>
+		<!--  -->
+		
+		<!--  -->
+		<div class="panel-body ">
+			<table class="table table-striped table-bordered table-hover"
+				id="selectRole" ></table>
+		</div>
+
+	</div>
+	
+	</form>
+</div>
+<script type="text/javascript">
+	
+  
+  $(document).one("onload.dms",function(event,container){
+	  var myRowData;
+  	new Datatable().initPagination({
+  		src : "selectRole",
+  		container:container,
+		url :dmsCommon.getDmsPath()["manage"] + "/basedata/roles",
+		rowID : "ROLE_ID",
+		sortName : "ROLE_ID", 
+		sortOrder : "asc",
+		height:380,
+		autoHeight:false,
+		columns:[
+		            {checkbox:true,sortable : false},
+					{field:"ROLE_CODE",title:"角色代码"},
+					{field:"ROLE_NAME",title:"角色名称"},
+					
+		    	  ]
+		   
+		});
+		 $("a[data-onclickEvent='true']",container).on("dms.click",function(event){
+			var selectRow = $("#selectRole",container).dmsTable().getSelections();
+			var roleIds;
+				if(!selectRow){
+					dmsCommon.tip({status:"warning",msg:"请单击选择父表格数据"});
+					
+				}
+				for(var i=0;i<selectRow.length;i++){
+					if(roleIds==null){
+						roleIds=selectRow[i].ROLE_ID;	
+					}else{
+						roleIds+=","+selectRow[i].ROLE_ID;
+					}			
+				}
+				
+
+			var roleId="data="+roleIds;
+	        var selectCode;
+	        var listtreeMenuAction=[];
+	        var listtreeMenuRange=[];///
+		    var menuIdBefore;
+		    var menuId; 
+		 dmsCommon.ajaxRestRequest({
+			url : dmsCommon.getDmsPath()["manage"]
+					+ "/basedata/roles/roleData/"+roleIds,
+			type : 'GET',
+			//data :roleId,
+			
+			sucessCallBack : function(data) {
+				listtreeMenuAction=data.treeMenuAction;
+				listtreeMenuRange=data.treeMenuRange;///
+				//alert(JSON.stringify(listtreeMenuRange));
+				//加载前先清空右侧的复选框组
+		 		var maintainObj = $("input[type='checkbox'][name^='maintain']:first",getElementContext());
+		 		var accessoriesObj = $("input[type='checkbox'][name^='accessories']:first",getElementContext());
+		 		var warehouseObj = $("input[type='checkbox'][name^='warehouse']:first",getElementContext());
+		 		var favorableModelsObj = $("input[type='checkbox'][name^='favorableModels']:first",getElementContext());
+		 	    maintainObj.attr("data-value","");
+		 	    accessoriesObj.attr("data-value","");
+		 	    warehouseObj.attr("data-value","");
+		 	    favorableModelsObj.attr("data-value","");
+		 	    dmsDict.initObject(maintainObj);
+		 	    dmsDict.initObject(accessoriesObj);
+		 	    dmsDict.initObject(warehouseObj);
+		 	    dmsDict.initObject(favorableModelsObj);
+			 	if(data.checkbox!=null){
+					$("div[data-tableSelect='true']",getElementContext()).initHtmlContent(data.checkbox);
+		  
+				} 
+		
+
+				 $("#using_json_2").jstree("destroy");
+				  $('#using_json_2').jstree({
+					'core' : {
+						 
+						'data' : data.treejson
+					},
+					 'types' : {  
+		                    "default" : {  
+		                        "icon" : "fa fa-folder icon-state-warning icon-lg"  
+		                    },  
+		                    "file" : {  
+		                        "icon" : "fa fa-file icon-state-warning icon-lg"  
+		                     }  
+		                }, 
+				
+				         'checkbox' : {  
+				             'keep_selected_style' : true ,
+				             'whole_node':false,
+				             'tie_selection':false         
+				        }, 
+				       
+				        plugins : ["checkbox" , "changed","types","wholerow"]
+
+				}).bind("activate_node.jstree", function (obj, e) {
+
+				    // 获取当前节点
+				    var currentNode = e.node;
+
+				}).bind("check_node.jstree", function (obj, e) {
+
+					 var nodes=$("#using_json_2").jstree("get_checked");
+						//alert("checked="+nodes);
+						selectCode=nodes;
+						$("#nowTree").val(selectCode);
+					
+				    // 处理代码
+				    // 获取当前节点
+				    var currentNode = e.node;
+
+				}).bind('click.jstree', function(event) {  
+					 var treeMenuActionMap;
+						
+				        var eventNodeName = event.target.nodeName;
+				       
+				        menuId=JSON.stringify($(event.target).parents('li').attr('id'));
+				        menuId = menuId.replace(new RegExp("\"",'gm'),"");
+				      // alert("menuId"+menuId)
+				       
+				        //获取选择的roleMenuAction 的值
+				       var obj=document.getElementsByName('roleMenuAction'); 
+				      // alert("obj"+obj.length);
+				      //huoqu选中的checkbox
+				       var chickId=''; 
+				      //if(obj!=null){
+				    	  for(var i=0; i<obj.length; i++){ 
+						        if(obj[i].checked) {
+						        	if(chickId==''){
+						        		chickId+=obj[i].value;
+						        	}else{
+						        		chickId+=','+obj[i].value; //如果选中，将value添加到变量s中 
+						        	}
+						        }
+						      }  
+						      // alert("chickId="+chickId);  
+				    //  }
+				    	  //获取选择的roleRange 的值
+						    var objRange=document.getElementsByName('roleMenuRange');
+							//huoqu选中的checkbox
+							var chickIdRange=''; 
+							//if(objRange!=null){
+							for(var i=0; i<objRange.length; i++){ 
+							    if(objRange[i].checked) {
+							       if(chickIdRange==''){
+							         chickIdRange+=objRange[i].value;
+							        }else{
+							         chickIdRange+=','+objRange[i].value; //如果选中，将value添加到变量s中 
+							        }
+							      }
+							   } ///
+							// }
+				     treeMenuActionMap=menuIdBefore+"-"+chickId;
+				     treeMenuRangeMap=menuIdBefore+"-"+chickIdRange;///
+				     if(chickId!=''){
+						   var s5= $.jstree.reference("#using_json_2").is_parent(menuIdBefore);
+						       if(s5==false){	
+						        listtreeMenuAction=$.grep(listtreeMenuAction,function(value){		
+						    	return value.indexOf(menuIdBefore)==-1;
+						      });
+						      	
+						   	    listtreeMenuAction.push(treeMenuActionMap);
+						  
+						     }	    	   
+					      }
+						   
+						   if(chickIdRange!=''){
+					    	   var s5=  $.jstree.reference("#using_json_2").is_parent(menuIdBefore);
+					    	   if(s5==false){
+					    		
+					    		   listtreeMenuRange=$.grep(listtreeMenuRange,function(value){	
+					    				return value.indexOf(menuIdBefore)==-1;
+					    			});///
+					    		   listtreeMenuRange.push(treeMenuRangeMap);///
+					    	   } 
+					       }
+						 // $("#treeMenuAction").val(listtreeMenuAction.join(";")); //?? 
+				   
+				        var s3= $.jstree.reference("#using_json_2").is_parent(menuId);
+					    if(s3==true){
+					    	//不是子节点   
+					    }else{
+					    	//是子节点
+					    	var ischecked= $.jstree.reference("#using_json_2").is_checked(menuId);
+					    	if(ischecked==true){
+					    		//是子节点 checkbox是被选中
+					    	 var s4=  $.jstree.reference("#using_json_2").is_selected(menuId);
+					    	 if(s4==true){
+					    		//是子节点 checkbox是被选中，是被选中
+					    		
+					    		//判断之前选的有没有，有的话去input里面找 没有的话去数据库查
+					    		 var huancun=$.grep(listtreeMenuAction,function(value){
+				    				return value.indexOf(menuId)!=-1;
+				    			});
+					 		  //  alert("huancun="+huancun+"menuId="+menuId);
+					 		    var huancunRange=$.grep(listtreeMenuRange,function(value){	
+				    	          return value.indexOf(menuId)!=-1;
+				                });///
+					 		    var roleMenuActionObj = $("input[type='checkbox'][name^='roleMenuAction']:first",getElementContext());
+					 	        var roleMenuRangeObj = $("input[type='checkbox'][name^='roleMenuRange']:first",getElementContext()); 
+					 	        roleMenuActionObj.attr("data-url","/basedata/roles/roleMenuAction/"+menuId);
+					 	        roleMenuRangeObj.attr("data-url","/basedata/roles/roleMenuRange/"+menuId);
+					 	        roleMenuActionObj.attr("data-value",huancun.join("").split("-")[1]);
+						 	    roleMenuRangeObj.attr("data-value",huancunRange.join("").split("-")[1]);/// 
+						 	    $("#roleMenuActionDiv",getElementContext()).show();
+					 	        $("#roleMenuRangeDiv",getElementContext()).show();
+					 	        
+					 	        dmsDict.initObject(roleMenuActionObj); 
+					 	        dmsDict.initObject(roleMenuRangeObj);
+					    	 }
+					    	 else{
+					    		 $("#roleMenuActionDiv",container).hide();
+							     $("#roleMenuRangeDiv",container).hide(); 
+					    		//是子节点 checkbox是被选中，没被选中
+					    	 }
+					    	}
+					    	else{
+					    		 $("#roleMenuActionDiv",container).hide();
+							     $("#roleMenuRangeDiv",container).hide(); 
+					    		//是子节点 checkbox没有被选中
+					    	}
+					    }
+					   
+					    menuIdBefore=menuId;
+				    });   
+				
+				  //子页面menuaction给父页面的
+				  $("#treeMenuAction",getElementContext()).val(listtreeMenuAction.join(";"));
+				  $("#treeMenuRange",getElementContext()).val(listtreeMenuRange.join(";"));///
+			}
+		}); 
+	/////////////////
+	
+	
+	//////////////////
+		 
+			//关闭窗口
+				$("a[data-dismiss='modal']",container).click();
+			
+		 });
+  	
+  
+
+		});
+</script>

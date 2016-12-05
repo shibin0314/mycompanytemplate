@@ -1,0 +1,46 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.yonyou.dms</groupId>
+		<artifactId>dms.parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<artifactId>dms.framework</artifactId>
+	<packaging>jar</packaging>
+
+	<dependencies>
+		<!-- 引用function 包 -->
+		<dependency>
+			<groupId>com.yonyou.dms</groupId>
+			<artifactId>dms.function</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		
+		<!-- 引入框架包 -->
+		<dependency>
+			<groupId>com.yonyou.f4</groupId>
+			<artifactId>mvc</artifactId>
+			<classifier>pg</classifier>
+		</dependency>
+		<dependency>
+			<groupId>com.yonyou.f4</groupId>
+			<artifactId>filestore</artifactId>
+		</dependency>
+		<!-- servlet -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+		</dependency>
+		
+		<!-- 单元测试 -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+		</dependency>
+	</dependencies>
+</project>

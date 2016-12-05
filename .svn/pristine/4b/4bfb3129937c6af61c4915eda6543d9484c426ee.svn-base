@@ -1,0 +1,70 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.yonyou.dms</groupId>
+    <artifactId>dms.parent</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+	
+  <artifactId>dms.web</artifactId>
+  <packaging>war</packaging>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.javalite</groupId>
+				<artifactId>activejdbc-instrumentation</artifactId>
+			</plugin>
+		</plugins>
+  	</build>
+ <dependencies>
+
+ 		<dependency>
+			<groupId>com.yonyou.dms</groupId>
+			<artifactId>dms.manage</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.yonyou.dms</groupId>
+			<artifactId>dms.demo</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+	
+		<!-- 单元测试 -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+		</dependency>
+	
+	</dependencies>
+	
+	<profiles>
+		<profile>
+			<id>dev-tomcat</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<resources>
+					<resource>
+						<directory>${project.basedir}/src/main/resources/</directory>
+					</resource>
+				</resources>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-war-plugin</artifactId>
+						<version>${maven-war-plugin.version}</version>
+						<configuration>
+							<warName>dms.web</warName>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>
